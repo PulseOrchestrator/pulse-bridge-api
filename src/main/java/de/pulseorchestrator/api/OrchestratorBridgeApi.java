@@ -13,6 +13,9 @@ import java.util.concurrent.CompletableFuture;
  */
 public interface OrchestratorBridgeApi {
 
+    /** Version of this API interface. Matches the pulse-bridge-api artifact version. */
+    String API_VERSION = "1.0.0-beta.2";
+
     // -------------------- System --------------------
 
     SystemStatusDto getSystemStatus();
