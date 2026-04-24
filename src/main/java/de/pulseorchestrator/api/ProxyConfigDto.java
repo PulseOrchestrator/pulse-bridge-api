@@ -8,5 +8,8 @@ import java.util.List;
 public record ProxyConfigDto(
         String routingPolicy,
         List<String> fallbackTasks,
-        String defaultEntryTask
+        String defaultEntryTask,
+        boolean maintenanceMode,
+        String maintenanceMessage,
+        String maintenanceBypassPermission
 ) {}

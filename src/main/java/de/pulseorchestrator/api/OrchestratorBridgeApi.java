@@ -92,6 +92,12 @@ public interface OrchestratorBridgeApi {
         return CompletableFuture.supplyAsync(() -> recreateService(serviceId, startAfter));
     }
 
+    ActionResult<ServiceDto> setServiceMaintenanceMode(String serviceId, boolean enabled);
+
+    default CompletableFuture<ActionResult<ServiceDto>> setServiceMaintenanceModeAsync(String serviceId, boolean enabled) {
+        return CompletableFuture.supplyAsync(() -> setServiceMaintenanceMode(serviceId, enabled));
+    }
+
     // -------------------- Console & commands --------------------
 
     ActionResult<Void> sendCommand(String serviceId, String command);
@@ -131,4 +137,6 @@ public interface OrchestratorBridgeApi {
     ProxyStatusDto getProxyStatus();
 
     ProxyConfigDto getProxyConfig();
+
+    ActionResult<ProxyConfigDto> setProxyMaintenanceMode(boolean enabled);
 }

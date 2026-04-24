@@ -12,6 +12,7 @@ public record ServiceDto(
         String taskName,
         int port,
         boolean persistent,
+        boolean maintenanceMode,
         ServiceStatus status,
         Long pid,
         Integer exitCode,
