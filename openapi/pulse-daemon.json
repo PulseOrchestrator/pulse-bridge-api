@@ -1,0 +1,1154 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Pulse daemon API",
+    "description": "Local API of the Pulse daemon on 127.0.0.1. Commands and the TUI use the daemon token from daemon.json; server plugins use the token of their service, which allows only the endpoints marked as available to services.",
+    "license": {
+      "name": ""
+    },
+    "version": "2.0"
+  },
+  "paths": {
+    "/api/v2/daemon": {
+      "get": {
+        "tags": [
+          "daemon"
+        ],
+        "summary": "Daemon version and directory.",
+        "operationId": "daemon_status",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DaemonStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/daemon/shutdown": {
+      "post": {
+        "tags": [
+          "daemon"
+        ],
+        "summary": "Stops the daemon. Services keep running and are adopted by the next daemon.",
+        "operationId": "daemon_shutdown",
+        "responses": {
+          "202": {}
+        }
+      }
+    },
+    "/api/v2/groups": {
+      "get": {
+        "tags": [
+          "groups"
+        ],
+        "summary": "All groups with their pinned build. Available to services.",
+        "operationId": "list_groups",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/groups/{name}/update": {
+      "post": {
+        "tags": [
+          "groups"
+        ],
+        "summary": "Resolves the group's version again and pins the result for the next starts.",
+        "operationId": "update_group",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "description": "Group name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Upstream API failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/services": {
+      "get": {
+        "tags": [
+          "services"
+        ],
+        "summary": "All services. Available to services.",
+        "operationId": "list_services",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServicesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/services/{id}": {
+      "get": {
+        "tags": [
+          "services"
+        ],
+        "summary": "One service. Available to services.",
+        "operationId": "get_service",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Service id, e.g. lobby-1",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/services/{id}/start": {
+      "post": {
+        "tags": [
+          "services"
+        ],
+        "summary": "Starts a service and keeps it running (desired state `running`). Available to services.",
+        "operationId": "start_service",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Service id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "E.g. the EULA is not accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/services/{id}/stop": {
+      "post": {
+        "tags": [
+          "services"
+        ],
+        "summary": "Stops a service and keeps it stopped (desired state `stopped`). Available to services.",
+        "operationId": "stop_service",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Service id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/services/{id}/exec": {
+      "post": {
+        "tags": [
+          "services"
+        ],
+        "summary": "Runs a console command through RCON.",
+        "operationId": "exec_service",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Service id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExecResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Not running, or no RCON (Velocity, custom)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/services/{id}/report": {
+      "put": {
+        "tags": [
+          "services"
+        ],
+        "summary": "The server's plugin reports its state, players and metrics. A service\ntoken may only report for its own service.",
+        "operationId": "report_service",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Service id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceReport"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {},
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/players": {
+      "get": {
+        "tags": [
+          "players"
+        ],
+        "summary": "Players on all servers, as reported by the server plugins. Available to services.",
+        "operationId": "list_players",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayersResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/players/{uuid}/send": {
+      "post": {
+        "tags": [
+          "players"
+        ],
+        "summary": "Asks the proxy to move a player to another server. Available to services.",
+        "operationId": "send_player",
+        "parameters": [
+          {
+            "name": "uuid",
+            "in": "path",
+            "description": "Player UUID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Passed on to the proxy"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Target is not a running, routable server",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/proxy/routing": {
+      "get": {
+        "tags": [
+          "proxy"
+        ],
+        "summary": "What the proxy needs to route players. Available to services.",
+        "operationId": "proxy_routing",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProxyRouting"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/proxy/maintenance": {
+      "post": {
+        "tags": [
+          "proxy"
+        ],
+        "summary": "Switches maintenance mode: only players with the bypass permission may join.",
+        "operationId": "set_maintenance",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MaintenanceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProxyRouting"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/events": {
+      "get": {
+        "tags": [
+          "events"
+        ],
+        "summary": "WebSocket stream of [`Event`] messages as JSON text frames. Service events\narrive when a service changes status, desired state, process or plugin\nstate. Available to services.",
+        "operationId": "events",
+        "responses": {
+          "101": {
+            "description": "WebSocket upgrade; each text frame is one Event"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DaemonStatus": {
+        "type": "object",
+        "required": [
+          "pid",
+          "version",
+          "root"
+        ],
+        "properties": {
+          "pid": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "version": {
+            "type": "string"
+          },
+          "root": {
+            "type": "string"
+          }
+        }
+      },
+      "Desired": {
+        "type": "string",
+        "enum": [
+          "running",
+          "stopped"
+        ]
+      },
+      "ErrorBody": {
+        "type": "object",
+        "description": "Body of every error response, and of `--json` errors in the commands.",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorDetail"
+          }
+        }
+      },
+      "ErrorDetail": {
+        "type": "object",
+        "required": [
+          "kind",
+          "message"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "description": "Stable machine-readable kind, e.g. `not_found` or `unsupported`."
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "Event": {
+        "oneOf": [
+          {
+            "type": "object",
+            "description": "A service changed its status, desired state, process or plugin state.",
+            "required": [
+              "service",
+              "type"
+            ],
+            "properties": {
+              "service": {
+                "$ref": "#/components/schemas/ServiceInfo"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "service"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "description": "The proxy should move a player; sent by `POST /players/{uuid}/send`.",
+            "required": [
+              "player",
+              "service",
+              "type"
+            ],
+            "properties": {
+              "player": {
+                "type": "string"
+              },
+              "service": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "player_send"
+                ]
+              }
+            }
+          }
+        ],
+        "description": "Messages on the event stream (`GET /events`, WebSocket)."
+      },
+      "ExecRequest": {
+        "type": "object",
+        "required": [
+          "command"
+        ],
+        "properties": {
+          "command": {
+            "type": "string"
+          }
+        }
+      },
+      "ExecResponse": {
+        "type": "object",
+        "required": [
+          "output"
+        ],
+        "properties": {
+          "output": {
+            "type": "string",
+            "description": "Console output of the command; often empty."
+          }
+        }
+      },
+      "Group": {
+        "type": "object",
+        "description": "Blueprint for services, read from `groups/<name>.toml`.",
+        "required": [
+          "software"
+        ],
+        "properties": {
+          "software": {
+            "$ref": "#/components/schemas/Software"
+          },
+          "version": {
+            "type": "string",
+            "description": "`latest`, a version such as `1.21.4`, or a fixed build such as `1.21.4#232`."
+          },
+          "memory": {
+            "type": "string",
+            "example": "1G"
+          },
+          "mode": {
+            "$ref": "#/components/schemas/Mode"
+          },
+          "instances": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Number of services Pulse keeps for this group.",
+            "minimum": 0
+          },
+          "templates": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Applied in order after the global and software templates."
+          },
+          "command": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Program and arguments for `software = \"custom\"`; not allowed otherwise."
+          },
+          "java": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Own `java` executable instead of the automatically installed runtime."
+          },
+          "ready_pattern": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Console line (regular expression) that marks the service as ready.\nMinecraft servers and Velocity have a built-in pattern; a custom group\nwithout one counts as ready once its process runs."
+          },
+          "startup_timeout": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Seconds until a service that is not ready is stopped as a failed start.",
+            "minimum": 0
+          }
+        },
+        "additionalProperties": false
+      },
+      "GroupInfo": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Group"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "build": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Pinned build, e.g. `1.21.4#232`; `None` until the first start."
+              }
+            }
+          }
+        ],
+        "description": "A group with the build its services start with. Serialize only: the\nflattened group rejects unknown fields when read back."
+      },
+      "GroupUpdate": {
+        "type": "object",
+        "description": "Result of `pulse group update`.",
+        "required": [
+          "group",
+          "to"
+        ],
+        "properties": {
+          "group": {
+            "type": "string"
+          },
+          "from": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "to": {
+            "type": "string"
+          }
+        }
+      },
+      "GroupsResponse": {
+        "type": "object",
+        "description": "Serialize only, like [`GroupInfo`].",
+        "required": [
+          "groups"
+        ],
+        "properties": {
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupInfo"
+            }
+          }
+        }
+      },
+      "MaintenanceRequest": {
+        "type": "object",
+        "required": [
+          "enabled"
+        ],
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Mode": {
+        "type": "string",
+        "enum": [
+          "static",
+          "dynamic"
+        ]
+      },
+      "OnlinePlayer": {
+        "type": "object",
+        "description": "A player on one of the servers, as reported by the server's plugin.",
+        "required": [
+          "uuid",
+          "name",
+          "service"
+        ],
+        "properties": {
+          "uuid": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "service": {
+            "type": "string"
+          }
+        }
+      },
+      "PlayerInfo": {
+        "type": "object",
+        "required": [
+          "uuid",
+          "name"
+        ],
+        "properties": {
+          "uuid": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "PlayersResponse": {
+        "type": "object",
+        "required": [
+          "players"
+        ],
+        "properties": {
+          "players": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OnlinePlayer"
+            }
+          }
+        }
+      },
+      "ProxyRouting": {
+        "type": "object",
+        "description": "Routing data for the `pulse-velocity` plugin.",
+        "required": [
+          "maintenance",
+          "maintenance_message",
+          "maintenance_bypass",
+          "servers",
+          "lobby",
+          "fallback"
+        ],
+        "properties": {
+          "maintenance": {
+            "type": "boolean"
+          },
+          "maintenance_message": {
+            "type": "string"
+          },
+          "maintenance_bypass": {
+            "type": "string",
+            "description": "Permission that lets a player join during maintenance."
+          },
+          "servers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RoutedServer"
+            },
+            "description": "Ready servers the proxy may send players to."
+          },
+          "lobby": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Ids of servers for the first join, in order of the configured groups."
+          },
+          "fallback": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Ids of servers for players kicked from another server."
+          }
+        }
+      },
+      "RoutedServer": {
+        "type": "object",
+        "required": [
+          "id",
+          "group",
+          "address"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "group": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string",
+            "description": "`host:port`"
+          }
+        }
+      },
+      "SendRequest": {
+        "type": "object",
+        "required": [
+          "service"
+        ],
+        "properties": {
+          "service": {
+            "type": "string",
+            "description": "Target service id."
+          }
+        }
+      },
+      "ServiceInfo": {
+        "type": "object",
+        "required": [
+          "id",
+          "group",
+          "desired",
+          "status",
+          "failures"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "group": {
+            "type": "string"
+          },
+          "desired": {
+            "$ref": "#/components/schemas/Desired"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ServiceStatus"
+          },
+          "pid": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "minimum": 0
+          },
+          "port": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "description": "Game port, or `PULSE_PORT` for custom services.",
+            "minimum": 0
+          },
+          "build": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Build the running process was started with, e.g. `1.21.4#232`."
+          },
+          "failures": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Failed starts and crashes in a row; reset after a stable run or a manual start.",
+            "minimum": 0
+          },
+          "retry_in_seconds": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "description": "Seconds until the next start attempt while in `backoff`.",
+            "minimum": 0
+          },
+          "last_error": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "state": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "State the server's plugin set, e.g. `LOBBY` or `INGAME`."
+          },
+          "metrics": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ServiceMetrics",
+                "description": "Last report of the server's plugin; `None` without a plugin."
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "ServiceMetrics": {
+        "type": "object",
+        "required": [
+          "players",
+          "max_players"
+        ],
+        "properties": {
+          "players": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "max_players": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "tps": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double",
+            "description": "Ticks per second over the last minute."
+          },
+          "memory_used_mb": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "memory_max_mb": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          }
+        }
+      },
+      "ServiceReport": {
+        "type": "object",
+        "description": "What a server plugin reports every few seconds (`PUT /services/{id}/report`).",
+        "required": [
+          "players",
+          "max_players"
+        ],
+        "properties": {
+          "state": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Free-form state for matchmaking, e.g. `LOBBY` or `INGAME`; `null` clears it."
+          },
+          "players": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlayerInfo"
+            }
+          },
+          "max_players": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "tps": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "format": "double"
+          },
+          "memory_used_mb": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          },
+          "memory_max_mb": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "minimum": 0
+          }
+        }
+      },
+      "ServiceResponse": {
+        "type": "object",
+        "required": [
+          "service"
+        ],
+        "properties": {
+          "service": {
+            "$ref": "#/components/schemas/ServiceInfo"
+          }
+        }
+      },
+      "ServiceStatus": {
+        "type": "string",
+        "enum": [
+          "stopped",
+          "preparing",
+          "starting",
+          "running",
+          "stopping",
+          "backoff"
+        ]
+      },
+      "ServicesResponse": {
+        "type": "object",
+        "required": [
+          "services"
+        ],
+        "properties": {
+          "services": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ServiceInfo"
+            }
+          }
+        }
+      },
+      "Software": {
+        "type": "string",
+        "enum": [
+          "paper",
+          "purpur",
+          "folia",
+          "velocity",
+          "fabric",
+          "vanilla",
+          "custom"
+        ]
+      },
+      "UpdateResponse": {
+        "type": "object",
+        "required": [
+          "update"
+        ],
+        "properties": {
+          "update": {
+            "$ref": "#/components/schemas/GroupUpdate"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "token": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "security": [
+    {
+      "token": []
+    }
+  ]
+}

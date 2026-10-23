@@ -1,13 +1,15 @@
 package de.pulseorchestrator.api;
 
-/**
- * Public service status enum mirroring the orchestrator's internal states.
- */
+/** What a service's process is doing. */
 public enum ServiceStatus {
-    CREATED,
+    STOPPED,
+    /** Copying templates and downloading the server. */
+    PREPARING,
+    /** The process runs and the server is loading. */
     STARTING,
+    /** Ready for players. */
     RUNNING,
     STOPPING,
-    STOPPED,
-    FAILED
+    /** Crashed or failed to start; Pulse retries after a delay. */
+    BACKOFF
 }
