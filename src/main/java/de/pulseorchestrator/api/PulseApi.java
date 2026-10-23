@@ -25,8 +25,8 @@ import java.util.concurrent.CompletableFuture;
  */
 public interface PulseApi {
 
-    /** Version of this interface. */
-    String API_VERSION = "2.0.0";
+    /** Version of this interface: major and minor only, changes are never patch-level. */
+    String API_VERSION = "2.0";
 
     /** Id of the service this server runs as, e.g. {@code bedwars-2}. */
     String serviceId();

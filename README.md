@@ -31,6 +31,8 @@ Declare `depend: [PulseOrchestrator]` (or `softdepend`) in your `plugin.yml`.
 
 ## Versions
 
+The API is versioned as major.minor only (`2.0`, `2.1`, ...): every change adds to or changes the API, so there are no patch releases. `PulseApi.API_VERSION` holds the version.
+
 | Branch | API |
 |---|---|
 | `main` | Pulse 2 (`PulseApi`) |
