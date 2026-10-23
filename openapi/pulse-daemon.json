@@ -9,7 +9,7 @@
     "version": "2.0"
   },
   "paths": {
-    "/api/v1/daemon": {
+    "/api/v2/daemon": {
       "get": {
         "tags": [
           "daemon"
@@ -29,7 +29,7 @@
         }
       }
     },
-    "/api/v1/daemon/shutdown": {
+    "/api/v2/daemon/shutdown": {
       "post": {
         "tags": [
           "daemon"
@@ -41,7 +41,7 @@
         }
       }
     },
-    "/api/v1/groups": {
+    "/api/v2/groups": {
       "get": {
         "tags": [
           "groups"
@@ -61,7 +61,7 @@
         }
       }
     },
-    "/api/v1/groups/{name}/update": {
+    "/api/v2/groups/{name}/update": {
       "post": {
         "tags": [
           "groups"
@@ -111,7 +111,7 @@
         }
       }
     },
-    "/api/v1/services": {
+    "/api/v2/services": {
       "get": {
         "tags": [
           "services"
@@ -131,7 +131,7 @@
         }
       }
     },
-    "/api/v1/services/{id}": {
+    "/api/v2/services/{id}": {
       "get": {
         "tags": [
           "services"
@@ -171,7 +171,7 @@
         }
       }
     },
-    "/api/v1/services/{id}/start": {
+    "/api/v2/services/{id}/start": {
       "post": {
         "tags": [
           "services"
@@ -221,7 +221,7 @@
         }
       }
     },
-    "/api/v1/services/{id}/stop": {
+    "/api/v2/services/{id}/stop": {
       "post": {
         "tags": [
           "services"
@@ -261,7 +261,7 @@
         }
       }
     },
-    "/api/v1/services/{id}/exec": {
+    "/api/v2/services/{id}/exec": {
       "post": {
         "tags": [
           "services"
@@ -312,7 +312,7 @@
         }
       }
     },
-    "/api/v1/services/{id}/report": {
+    "/api/v2/services/{id}/report": {
       "put": {
         "tags": [
           "services"
@@ -363,7 +363,7 @@
         }
       }
     },
-    "/api/v1/players": {
+    "/api/v2/players": {
       "get": {
         "tags": [
           "players"
@@ -383,7 +383,7 @@
         }
       }
     },
-    "/api/v1/players/{uuid}/send": {
+    "/api/v2/players/{uuid}/send": {
       "post": {
         "tags": [
           "players"
@@ -437,7 +437,7 @@
         }
       }
     },
-    "/api/v1/proxy/routing": {
+    "/api/v2/proxy/routing": {
       "get": {
         "tags": [
           "proxy"
@@ -457,7 +457,7 @@
         }
       }
     },
-    "/api/v1/proxy/maintenance": {
+    "/api/v2/proxy/maintenance": {
       "post": {
         "tags": [
           "proxy"
@@ -487,7 +487,7 @@
         }
       }
     },
-    "/api/v1/events": {
+    "/api/v2/events": {
       "get": {
         "tags": [
           "events"

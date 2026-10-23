@@ -27,11 +27,11 @@ Declare `depend: [PulseOrchestrator]` (or `softdepend`) in your `plugin.yml`.
 
 ## HTTP: daemon API
 
-`openapi/pulse-daemon.json` describes the local HTTP and WebSocket API of the Pulse daemon. Use it to generate a client in any language. The daemon publishes the current description at `GET /api/v1/openapi.json`.
+`openapi/pulse-daemon.json` describes the local HTTP and WebSocket API of the Pulse daemon. Use it to generate a client in any language. The daemon publishes the current description at `GET /api/v2/openapi.json`.
 
 ## Versions
 
-The API is versioned as major.minor only (`2.0`, `2.1`, ...): every change adds to or changes the API, so there are no patch releases. `PulseApi.API_VERSION` holds the version.
+The API is versioned as major.minor only (`2.0`, `2.1`, ...): every change adds to or changes the API, so there are no patch releases. `PulseApi.API_VERSION` holds the version. The HTTP API carries the major version in its path (`/api/v2/...`); minor versions only add and keep the path.
 
 | Branch | API |
 |---|---|
